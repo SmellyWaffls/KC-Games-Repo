@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-scheme="blue">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KC Games</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%2245%22 height=%2245%22 x=%224%22 y=%224%22 fill=%22%23ff5252%22/><rect width=%2245%22 height=%2245%22 x=%2251%22 y=%224%22 fill=%22%2352c93d%22/><rect width=%2245%22 height=%2245%22 x=%224%22 y=%2251%22 fill=%22%232586ff%22/><rect width=%2245%22 height=%2245%22 x=%2251%22 y=%2251%22 fill=%22%23ffd23d%22/></svg>">
+<link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body>
+
+<div class="desktop">
+
+  <!-- Desktop icons -->
+  <div class="desktop-icons">
+    <button class="desktop-icon" data-focus="games-window">
+      <span class="d-icon" aria-hidden="true">🗄️</span>
+      <span class="d-label">My Games</span>
+    </button>
+    <button class="desktop-icon" id="recycle-icon">
+      <span class="d-icon" aria-hidden="true">🗑️</span>
+      <span class="d-label">Recycle Bin</span>
+    </button>
+  </div>
+
+  <!-- Main "My Games" filing-cabinet window -->
+  <section class="window" id="games-window" style="left:60px; top:40px; width:min(880px, 90vw); z-index:5;">
+    <div class="title-bar">
+      <span class="title-bar-icon" aria-hidden="true">🗄️</span>
+      <span class="title-bar-text">My Games</span>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" data-action="minimize" aria-label="Minimize">_</button>
+        <button class="tb-btn tb-max" data-action="maximize" aria-label="Maximize">▢</button>
+        <button class="tb-btn tb-close" data-action="close" aria-label="Close">✕</button>
+      </div>
+    </div>
+    <div class="menu-bar">
+      <span>File</span><span>Edit</span><span>View</span><span>Favorites</span><span>Tools</span><span>Help</span>
+    </div>
+    <div class="toolbar">
+      <button class="tbar-btn" type="button">⬅ Back</button>
+      <button class="tbar-btn" type="button">Forward ➡</button>
+      <button class="tbar-btn" type="button">⬆ Up</button>
+      <span class="tbar-sep"></span>
+      <button class="tbar-btn" type="button">🔍 Search</button>
+      <button class="tbar-btn" type="button">🗄️ Drawer</button>
+    </div>
+    <div class="address-bar">
+      <span class="address-label">Address</span>
+      <span class="address-value">🗄️ C:\My Games\Drawer 1\</span>
+    </div>
+
+    <div class="window-body drawer-body">
+      <p class="drawer-hint">Pick a file from the drawer &mdash; click a folder to pull it out.</p>
+      <div class="drawer">
+        <div class="drawer-rail" aria-hidden="true"></div>
+        <div class="drawer-files" id="games-drawer">
+          <!-- Game folders rendered here by js/script.js from the GAMES array -->
+        </div>
+        <div class="drawer-front" aria-hidden="true">
+          <span class="drawer-plate">GAMES &mdash; A&ndash;Z</span>
+          <span class="drawer-handle"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <span id="status-text">1 file(s)</span>
+      <span class="status-sep"></span>
+      <span>🗄️ Drawer 1 of 1</span>
+    </div>
+  </section>
+
+  <!-- Game details dialog (hidden by default) -->
+  <div class="modal-overlay" id="modal-overlay">
+    <section class="window dialog-window" id="game-dialog">
+      <div class="title-bar">
+        <span class="title-bar-icon" id="dialog-icon" aria-hidden="true">🎮</span>
+        <span class="title-bar-text" id="dialog-title">Game Properties</span>
+        <div class="title-bar-controls">
+          <button class="tb-btn tb-close" data-action="dialog-close" aria-label="Close">✕</button>
+        </div>
+      </div>
+      <div class="window-body dialog-body">
+        <div class="dialog-icon-large" id="dialog-icon-large">🎮</div>
+        <div class="dialog-info">
+          <h3 id="dialog-name">Game Name</h3>
+          <p id="dialog-desc">Description.</p>
+          <div class="dialog-row"><strong>Status:</strong> <span id="dialog-status"></span></div>
+          <div class="dialog-row"><strong>Tags:</strong> <span id="dialog-tags"></span></div>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <a class="win-btn win-btn-accent" id="dialog-link" href="#">Play / View</a>
+        <button class="win-btn" data-action="dialog-close" type="button">Close</button>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<!-- Start menu -->
+<div class="start-menu" id="start-menu">
+  <div class="start-menu-banner"><span>KC Games</span></div>
+  <ul class="start-menu-list">
+    <li data-focus="games-window">🗄️ My Games</li>
+    <li class="start-menu-sep"></li>
+    <li data-scheme-cycle="1">🎨 Change Color Scheme</li>
+  </ul>
+</div>
+
+<!-- Taskbar -->
+<footer class="taskbar">
+  <button class="start-button" id="start-button" type="button">
+    <span class="flag" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    Start
+  </button>
+  <div class="taskbar-sep"></div>
+  <div class="taskbar-items" id="taskbar-items">
+    <!-- Taskbar window buttons rendered by js/script.js -->
+  </div>
+  <div class="tray">
+    <span class="tray-icon" title="Change color scheme" id="tray-scheme">🎨</span>
+    <span class="tray-clock" id="tray-clock">12:00 PM</span>
+  </div>
+</footer>
+
+<script src="js/script.js?v=2"></script>
+</body>
+</html>

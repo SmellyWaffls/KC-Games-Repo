@@ -1,0 +1,867 @@
+/* ============================================================
+   KC Games — retro Windows XP/98-style desktop skin
+   ============================================================ */
+
+/* ---------- Color schemes (XP Display Properties style) ---------- */
+
+:root {
+  --font: "Tahoma", "MS Sans Serif", "Segoe UI", sans-serif;
+
+  --sunken-hi: #ffffff;
+  --sunken-lo: #808080;
+  --raised-hi: #ffffff;
+  --raised-lo: #808080;
+  --select-bg: #316ac5;
+  --select-text: #ffffff;
+}
+
+:root[data-scheme="blue"] {
+  --tb-a: #3a94ff;
+  --tb-b: #1257e0;
+  --tb-c: #0033a0;
+  --tb-text: #ffffff;
+  --win-bg: #ece9d8;
+  --win-border: #0831d9;
+  --field-bg: #ffffff;
+  --start-a: #6fe23c;
+  --start-b: #2c8b13;
+  --start-text: #ffffff;
+  --taskbar-a: #2a86ff;
+  --taskbar-b: #0d47c7;
+  --sky-top: #1e6fd9;
+  --sky-bottom: #bfe3ff;
+  --hill-a: #6cb33f;
+  --hill-b: #3f8a1e;
+}
+
+:root[data-scheme="olive"] {
+  --tb-a: #b9d16a;
+  --tb-b: #7a9a34;
+  --tb-c: #46590f;
+  --tb-text: #ffffff;
+  --win-bg: #f2f1de;
+  --win-border: #55690f;
+  --field-bg: #ffffff;
+  --start-a: #cfe06a;
+  --start-b: #85a022;
+  --start-text: #2b3300;
+  --taskbar-a: #a9c25e;
+  --taskbar-b: #5c7a29;
+  --sky-top: #7e9b3a;
+  --sky-bottom: #d8e3b0;
+  --hill-a: #8fae3f;
+  --hill-b: #55701f;
+}
+
+:root[data-scheme="silver"] {
+  --tb-a: #c2c8d4;
+  --tb-b: #838fa2;
+  --tb-c: #4d5666;
+  --tb-text: #1b1f24;
+  --win-bg: #ececec;
+  --win-border: #6b7280;
+  --field-bg: #ffffff;
+  --start-a: #d9dee5;
+  --start-b: #8b93a0;
+  --start-text: #1b1f24;
+  --taskbar-a: #b7bfcc;
+  --taskbar-b: #5f6673;
+  --sky-top: #7c8698;
+  --sky-bottom: #d7dce3;
+  --hill-a: #9aa3ad;
+  --hill-b: #616a75;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 12px;
+  color: #000;
+  overflow: hidden;
+}
+
+/* ---------- Desktop background (Bliss-style sky + hill) ---------- */
+
+.desktop {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 34px);
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
+}
+
+.desktop::before {
+  /* rolling hill */
+  content: "";
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -6%;
+  height: 42%;
+  background: linear-gradient(180deg, var(--hill-a), var(--hill-b));
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+.desktop::after {
+  /* soft clouds */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(60px 26px at 15% 22%, rgba(255,255,255,0.85), transparent 70%),
+    radial-gradient(90px 34px at 32% 16%, rgba(255,255,255,0.75), transparent 70%),
+    radial-gradient(70px 28px at 75% 12%, rgba(255,255,255,0.7), transparent 70%),
+    radial-gradient(50px 22px at 88% 26%, rgba(255,255,255,0.7), transparent 70%);
+  pointer-events: none;
+}
+
+/* ---------- Desktop icons ---------- */
+
+.desktop-icons {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 74px;
+  padding: 6px 4px;
+  background: transparent;
+  border: 1px dotted transparent;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--font);
+}
+
+.desktop-icon:hover,
+.desktop-icon:focus {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(49, 106, 197, 0.25);
+  outline: none;
+}
+
+.d-icon {
+  font-size: 32px;
+  line-height: 1;
+  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.6));
+}
+
+.d-label {
+  margin-top: 4px;
+  font-size: 11px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.85);
+}
+
+/* ---------- Bevel helpers ---------- */
+
+.bevel-raised {
+  border-top: 1px solid var(--raised-hi);
+  border-left: 1px solid var(--raised-hi);
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 var(--raised-lo);
+}
+
+.bevel-sunken {
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid var(--sunken-hi);
+  border-bottom: 1px solid var(--sunken-hi);
+  box-shadow: inset 1px 1px 0 var(--sunken-lo), inset -1px -1px 0 #dfdfdf;
+}
+
+/* ---------- Windows ---------- */
+
+.window {
+  position: absolute;
+  background: var(--win-bg);
+  border: 1px solid var(--win-border);
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.15), 4px 6px 18px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+}
+
+.window.is-hidden { display: none; }
+
+.title-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px 3px 6px;
+  background: linear-gradient(180deg, var(--tb-a) 0%, var(--tb-b) 55%, var(--tb-c) 100%);
+  color: var(--tb-text);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: default;
+  user-select: none;
+}
+
+.title-bar-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.title-bar-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+
+.title-bar-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.tb-btn {
+  width: 20px;
+  height: 18px;
+  font-size: 11px;
+  line-height: 1;
+  font-family: var(--font);
+  font-weight: 700;
+  background: #ece9d8;
+  color: #000;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tb-btn:active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+
+.tb-close:hover { background: #e81123; color: #fff; }
+
+.menu-bar {
+  display: flex;
+  gap: 14px;
+  padding: 3px 10px;
+  background: var(--win-bg);
+  border-bottom: 1px solid #b8b5a0;
+  font-size: 11.5px;
+}
+
+.menu-bar span { cursor: default; }
+.menu-bar span:hover { background: var(--select-bg); color: #fff; padding: 0 2px; margin: 0 -2px; }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: var(--win-bg);
+  border-bottom: 1px solid #b8b5a0;
+  flex-wrap: wrap;
+}
+
+.tbar-btn {
+  font-family: var(--font);
+  font-size: 11px;
+  background: var(--win-bg);
+  border: 1px solid transparent;
+  padding: 3px 7px;
+  cursor: pointer;
+}
+
+.tbar-btn:hover {
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  background: #f4f2e6;
+}
+
+.tbar-sep {
+  width: 1px;
+  align-self: stretch;
+  background: #b8b5a0;
+  margin: 0 4px;
+}
+
+.address-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--win-bg);
+  border-bottom: 1px solid #b8b5a0;
+}
+
+.address-label { font-size: 11px; color: #333; }
+
+.address-value {
+  flex: 1;
+  background: var(--field-bg);
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  box-shadow: inset 1px 1px 0 #808080;
+  padding: 3px 8px;
+  font-size: 11.5px;
+}
+
+.window-body {
+  background: var(--field-bg);
+  border-top: 1px solid #808080;
+  padding: 12px;
+  overflow: auto;
+  max-height: 52vh;
+}
+
+.status-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--win-bg);
+  border-top: 1px solid #fff;
+  font-size: 11px;
+  color: #333;
+}
+
+.status-sep {
+  width: 1px;
+  height: 12px;
+  background: #b8b5a0;
+}
+
+/* ---------- Notepad-style windows ---------- */
+
+.notepad-body {
+  font-family: "Courier New", monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  max-height: none;
+}
+
+.notepad-body p { margin: 0 0 10px; }
+
+/* ---------- Classic button ---------- */
+
+.win-btn {
+  font-family: var(--font);
+  font-size: 11.5px;
+  padding: 5px 16px;
+  background: var(--win-bg);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+  cursor: pointer;
+  text-decoration: none;
+  color: #000;
+  display: inline-block;
+}
+
+.win-btn:active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  box-shadow: inset -1px -1px 0 #dfdfdf, inset 1px 1px 0 #808080;
+}
+
+.win-btn-accent {
+  font-weight: 700;
+}
+
+/* ---------- Filing drawer (games as pull-out file folders) ---------- */
+
+.drawer-body {
+  background: #d8d4c0;
+  padding: 10px 12px 14px;
+  max-height: none;
+}
+
+.drawer-hint {
+  margin: 0 0 8px;
+  font-size: 11px;
+  color: #4a4636;
+}
+
+.drawer {
+  position: relative;
+  background: linear-gradient(180deg, #3b3a34 0%, #57544a 18%, #6b6759 100%);
+  border-top: 2px solid #2a2924;
+  border-left: 2px solid #2a2924;
+  border-right: 2px solid #8d8a7c;
+  border-bottom: 2px solid #8d8a7c;
+  padding: 22px 16px 0;
+  overflow: hidden;
+}
+
+.drawer-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 12px;
+  height: 3px;
+  background: linear-gradient(180deg, #9a9788, #47453d);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.drawer-files {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  min-height: 190px;
+  padding: 0 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.file-folder {
+  position: relative;
+  flex: 0 0 108px;
+  height: 168px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  transform: translateY(28px) rotate(-0.6deg);
+  transition: transform 0.22s cubic-bezier(.2,.9,.3,1);
+}
+
+.file-folder:nth-child(even) { transform: translateY(28px) rotate(0.7deg); }
+
+.file-folder:hover,
+.file-folder:focus-visible {
+  transform: translateY(6px) rotate(0deg);
+  outline: none;
+  z-index: 3;
+}
+
+.file-folder.pulled {
+  transform: translateY(-16px) rotate(0deg) scale(1.04);
+  z-index: 4;
+}
+
+/* the manila folder body */
+.folder-face {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #f2d99a 0%, #e0bd6c 55%, #cfa74f 100%);
+  border: 1px solid #a9843a;
+  border-radius: 2px 2px 3px 3px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.55),
+    2px 3px 6px rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 26px 8px 10px;
+  overflow: hidden;
+}
+
+/* the tab sticking up on top of the folder */
+.folder-tab {
+  position: absolute;
+  top: -13px;
+  height: 16px;
+  width: 84px;
+  padding: 0 7px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: linear-gradient(180deg, #f5e0a8, #e2c070);
+  border: 1px solid #a9843a;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6a4f14;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-tab.tab-left   { left: 6px; }
+.folder-tab.tab-center { left: 50%; transform: translateX(-50%); }
+.folder-tab.tab-right  { right: 6px; }
+
+/* the sheet of paper poking out of the folder */
+.folder-paper {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  right: 12px;
+  bottom: 46px;
+  background: #fdfcf5;
+  border: 1px solid #c9c4ab;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  padding: 6px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.paper-line {
+  height: 2px;
+  background: #ddd8c4;
+  border-radius: 1px;
+}
+.paper-line:nth-child(2) { width: 78%; }
+.paper-line:nth-child(3) { width: 90%; }
+.paper-line:nth-child(4) { width: 64%; }
+
+.game-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.title-bar-icon .game-art {
+  width: 15px;
+  height: 15px;
+}
+
+.folder-badge {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border: 1px solid rgba(0,0,0,0.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* the front flap of the folder, printed with the game name */
+.folder-front {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 62px;
+  background: linear-gradient(180deg, #e8c877 0%, #d9b25c 100%);
+  border-top: 1px solid #b9913f;
+  border-radius: 0 0 3px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 6px;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.12);
+}
+
+.folder-name {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #4a350c;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.folder-status {
+  font-size: 8.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6a4f14;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(0,0,0,0.15);
+  padding: 1px 5px;
+}
+
+/* drawer front panel with handle */
+.drawer-front {
+  position: relative;
+  margin: 0 -16px;
+  height: 46px;
+  background: linear-gradient(180deg, #8d8a7c 0%, #6d6a5e 45%, #4c4a41 100%);
+  border-top: 2px solid #a6a396;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.drawer-plate {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #2e2d27;
+  background: #cfccbb;
+  border-top: 1px solid #6f6d62;
+  border-left: 1px solid #6f6d62;
+  border-right: 1px solid #efeddf;
+  border-bottom: 1px solid #efeddf;
+  padding: 3px 14px;
+}
+
+.drawer-handle {
+  width: 74px;
+  height: 12px;
+  background: linear-gradient(180deg, #d5d2c4, #7c7a6e 60%, #56544b);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 3px rgba(0,0,0,0.4);
+}
+
+/* ---------- Modal dialog (game properties) ---------- */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.dialog-window {
+  position: relative;
+  width: min(440px, 90vw);
+}
+
+.dialog-body {
+  display: flex;
+  gap: 16px;
+  max-height: none;
+}
+
+.dialog-icon-large {
+  font-size: 48px;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  flex-shrink: 0;
+}
+
+.dialog-info h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.dialog-info p {
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.dialog-row {
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--win-bg);
+  border-top: 1px solid #b8b5a0;
+}
+
+/* ---------- Start menu ---------- */
+
+.start-menu {
+  display: none;
+  position: fixed;
+  left: 0;
+  bottom: 34px;
+  width: 240px;
+  background: var(--win-bg);
+  border: 1px solid var(--win-border);
+  box-shadow: 2px -2px 0 rgba(0,0,0,0.15), 4px 4px 16px rgba(0,0,0,0.4);
+  z-index: 200;
+}
+
+.start-menu.open { display: block; }
+
+.start-menu-banner {
+  background: linear-gradient(180deg, var(--tb-a), var(--tb-c));
+  color: var(--tb-text);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 10px;
+}
+
+.start-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.start-menu-list li {
+  padding: 8px 14px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.start-menu-list li:hover {
+  background: var(--select-bg);
+  color: #fff;
+}
+
+.start-menu-sep {
+  height: 1px;
+  margin: 6px 0;
+  background: #b8b5a0;
+  cursor: default !important;
+}
+
+.start-menu-sep:hover {
+  background: #b8b5a0 !important;
+}
+
+/* ---------- Taskbar ---------- */
+
+.taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+  background: linear-gradient(180deg, var(--taskbar-a), var(--taskbar-b));
+  border-top: 1px solid rgba(255,255,255,0.5);
+  z-index: 150;
+}
+
+.start-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 12px 0 6px;
+  background: linear-gradient(180deg, var(--start-a), var(--start-b));
+  color: var(--start-text);
+  font-family: var(--font);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 13px;
+  border: 1px solid rgba(0,0,0,0.4);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  cursor: pointer;
+}
+
+.start-button:active {
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.flag {
+  display: grid;
+  grid-template-columns: repeat(2, 6px);
+  grid-template-rows: repeat(2, 6px);
+  gap: 1px;
+}
+
+.flag i { display: block; }
+.flag i:nth-child(1) { background: #ff5252; }
+.flag i:nth-child(2) { background: #52c93d; }
+.flag i:nth-child(3) { background: #2586ff; }
+.flag i:nth-child(4) { background: #ffd23d; }
+
+.taskbar-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(0,0,0,0.35);
+  box-shadow: 1px 0 0 rgba(255,255,255,0.3);
+}
+
+.taskbar-items {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.taskbar-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  font-family: var(--font);
+  font-size: 11.5px;
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 3px;
+  cursor: pointer;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskbar-item.active {
+  background: rgba(0,0,0,0.28);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding: 0 10px;
+  background: rgba(0,0,0,0.15);
+  border-left: 1px solid rgba(0,0,0,0.3);
+  box-shadow: 1px 0 0 rgba(255,255,255,0.25);
+  color: #fff;
+  font-size: 11.5px;
+}
+
+.tray-icon {
+  cursor: pointer;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 720px) {
+  .window { width: 92vw !important; left: 4vw !important; }
+  .desktop-icons { display: none; }
+  .dialog-body { flex-direction: column; align-items: flex-start; }
+}
