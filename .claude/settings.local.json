@@ -11,7 +11,9 @@
       "Bash(git config *)",
       "Bash(ls -lt ~/Downloads 2>/dev/null | head -12; echo \"--- Desktop ---\"; ls -lt ~/OneDrive/Desktop 2>/dev/null | head -12)",
       "Bash(git remote *)",
-      "Bash(git branch *)"
+      "Bash(git branch *)",
+      "Bash(timeout 60 git fetch origin)",
+      "Bash(git rev-list *)"
     ]
   }
 }

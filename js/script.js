@@ -91,11 +91,37 @@ const Sound = (() => {
     src.start();
   }
 
+  // A run of notes, used for win fanfares and save confirmations.
+  function arp(freqs, { gap = 80, dur = 0.12, vol = 0.05, type = "triangle" } = {}) {
+    freqs.forEach((f, i) => setTimeout(() => blip({ freq: f, dur, vol, type }), i * gap));
+  }
+
   return {
     // Sweeping the cursor across the drawer walks up a scale, so a fast
     // pass sounds like running a thumb along the file tabs.
     tick(step = 0) {
       blip({ freq: 520 + (step % 12) * 26, dur: 0.035, vol: 0.035, type: "square" });
+    },
+
+    // --- primitives, for the built-in apps to compose with ---
+    blip,
+    rasp,
+    arp,
+
+    // Low noise burst plus a sub drop — the Minesweeper detonation.
+    boom() {
+      rasp({ dur: 0.45, vol: 0.13, from: 900, to: 60 });
+      blip({ freq: 130, to: 32, dur: 0.5, vol: 0.12, type: "sine" });
+    },
+
+    // Short hollow pop for revealing a cell or committing a shape.
+    pop(step = 0) {
+      blip({ freq: 300 + (step % 8) * 40, to: 640, dur: 0.045, vol: 0.045, type: "square" });
+    },
+
+    // Downward whoosh for clearing or resetting.
+    swipe() {
+      rasp({ dur: 0.22, vol: 0.07, from: 2200, to: 300 });
     },
     slide() {
       rasp({ dur: 0.16, vol: 0.06, from: 1600, to: 420 });

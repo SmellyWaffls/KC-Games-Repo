@@ -45,6 +45,7 @@ const Minesweeper = (() => {
     over = false;
     seconds = 0;
     stopTimer();
+    if (window.Sound) Sound.swipe();
     setFace("🙂");
     setStatus("Left-click to clear · right-click to flag");
     paint();
@@ -83,20 +84,38 @@ const Minesweeper = (() => {
   }
 
   // Iterative flood fill outward from any revealed blank cell.
+  // Returns how many cells opened, so the sound can match the size of the run.
   function reveal(cell) {
-    if (cell.revealed || cell.flagged) return;
+    if (cell.revealed || cell.flagged) return 0;
 
+    let opened = 0;
     const stack = [cell];
     while (stack.length) {
       const cur = stack.pop();
       if (cur.revealed || cur.flagged) continue;
       cur.revealed = true;
+      opened++;
       if (cur.adj === 0 && !cur.mine) {
         neighbours(cur.r, cur.c).forEach(([r, c]) => {
           const n = cells[idx(r, c)];
           if (!n.revealed && !n.flagged) stack.push(n);
         });
       }
+    }
+    return opened;
+  }
+
+  // One pop for a single cell; a short rising cascade when a blank region
+  // unfurls, so a big opening actually sounds big.
+  function revealSound(opened, adj) {
+    if (!window.Sound) return;
+    if (opened <= 1) {
+      Sound.pop(adj);
+      return;
+    }
+    const notes = Math.min(6, Math.ceil(opened / 3));
+    for (let i = 0; i < notes; i++) {
+      setTimeout(() => Sound.pop(i + 1), i * 45);
     }
   }
 
@@ -109,7 +128,7 @@ const Minesweeper = (() => {
     setFace("😎");
     setStatus("Cleared! " + seconds + "s");
     cells.forEach((c) => { if (c.mine) c.flagged = true; });
-    if (window.Sound) Sound.open();
+    if (window.Sound) Sound.arp([523, 659, 784, 1047], { gap: 95, dur: 0.16, vol: 0.055 });
   }
 
   function loseAt(cell) {
@@ -119,7 +138,7 @@ const Minesweeper = (() => {
     cells.forEach((c) => { if (c.mine) c.revealed = true; });
     setFace("😵");
     setStatus("Boom. Click the face to try again.");
-    if (window.Sound) Sound.thud();
+    if (window.Sound) Sound.boom();
   }
 
   function onLeft(cell) {
@@ -134,8 +153,7 @@ const Minesweeper = (() => {
     if (cell.mine) {
       loseAt(cell);
     } else {
-      reveal(cell);
-      if (window.Sound) Sound.tick(cell.adj);
+      revealSound(reveal(cell), cell.adj);
       checkWin();
     }
     paint();
@@ -144,7 +162,12 @@ const Minesweeper = (() => {
   function onRight(cell) {
     if (over || cell.revealed) return;
     cell.flagged = !cell.flagged;
-    if (window.Sound) Sound.click();
+    if (window.Sound) {
+      // Planting a flag pins upward; pulling one out drops back down.
+      cell.flagged
+        ? Sound.blip({ freq: 700, to: 1150, dur: 0.06, vol: 0.05, type: "square" })
+        : Sound.blip({ freq: 900, to: 480, dur: 0.06, vol: 0.04, type: "square" });
+    }
     paint();
   }
 
@@ -236,6 +259,22 @@ const Paint = (() => {
   let drawing = false;
   let startPt = null;
   let snapshot = null;
+  let lastScratch = 0;
+
+  // Freehand strokes get a throttled rasp so dragging sounds like the nib
+  // dragging on paper, without spawning a node per mousemove event.
+  function scratch() {
+    if (!window.Sound) return;
+    const now = performance.now();
+    if (now - lastScratch < 55) return;
+    lastScratch = now;
+    Sound.rasp({
+      dur: 0.05,
+      vol: 0.022,
+      from: 2600 + Math.random() * 900,
+      to: 1500
+    });
+  }
 
   function pos(e) {
     const r = canvas.getBoundingClientRect();
@@ -261,7 +300,11 @@ const Paint = (() => {
     if (tool === "fill") {
       floodFill(startPt.x, startPt.y, color);
       drawing = false;
-      if (window.Sound) Sound.slide();
+      // A downward glug as the paint floods out.
+      if (window.Sound) {
+        Sound.rasp({ dur: 0.3, vol: 0.07, from: 1100, to: 180 });
+        Sound.blip({ freq: 420, to: 170, dur: 0.28, vol: 0.05, type: "sine" });
+      }
       return;
     }
 
@@ -284,6 +327,7 @@ const Paint = (() => {
     if (tool === "pencil" || tool === "eraser") {
       ctx.lineTo(p.x, p.y);
       ctx.stroke();
+      scratch();
       return;
     }
 
@@ -296,12 +340,16 @@ const Paint = (() => {
     drawing = false;
     if (tool === "pencil" || tool === "eraser") {
       ctx.closePath();
-    } else if (snapshot) {
+      return;
+    }
+
+    if (snapshot) {
       ctx.putImageData(snapshot, 0, 0);
       drawShape(startPt, pos(e));
       snapshot = null;
     }
-    if (window.Sound) Sound.tick(size);
+    // Shapes land with a snap; bigger brushes read lower.
+    if (window.Sound) Sound.pop(Math.max(0, 8 - size));
   }
 
   function drawShape(a, b) {
@@ -351,7 +399,7 @@ const Paint = (() => {
   function clear() {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    if (window.Sound) Sound.close();
+    if (window.Sound) Sound.swipe();
   }
 
   function setStatus(t) {
@@ -383,7 +431,7 @@ const Paint = (() => {
     const current = document.getElementById("pt-current");
     current.style.background = color;
 
-    PALETTE.forEach((hex) => {
+    PALETTE.forEach((hex, i) => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "paint-swatch";
@@ -392,7 +440,10 @@ const Paint = (() => {
       b.addEventListener("click", () => {
         color = hex;
         current.style.background = hex;
-        if (window.Sound) Sound.click();
+        // Each swatch has its own pitch, so the palette plays like a keyboard.
+        if (window.Sound) {
+          Sound.blip({ freq: 440 + i * 22, dur: 0.05, vol: 0.04, type: "triangle" });
+        }
       });
       wrap.appendChild(b);
     });
@@ -424,6 +475,7 @@ const Paint = (() => {
       a.download = "painting.png";
       a.href = canvas.toDataURL("image/png");
       a.click();
+      if (window.Sound) Sound.arp([784, 1047], { gap: 90, dur: 0.14, vol: 0.05 });
     });
   }
 
