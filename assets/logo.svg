@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="KC Games">
+  <defs>
+    <radialGradient id="ball" cx="34%" cy="26%" r="78%">
+      <stop offset="0%"   stop-color="#ff7d72"/>
+      <stop offset="38%"  stop-color="#ec1c24"/>
+      <stop offset="100%" stop-color="#8e0206"/>
+    </radialGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <ellipse cx="52" cy="92" rx="34" ry="6" fill="#000" opacity=".22"/>
+  <circle cx="50" cy="50" r="42" fill="url(#ball)"/>
+  <circle cx="50" cy="50" r="42" fill="none" stroke="#6d0004" stroke-width="1.5" opacity=".7"/>
+  <ellipse cx="44" cy="27" rx="24" ry="14" fill="url(#gloss)"/>
+
+  <g stroke-linecap="round" fill="none">
+    <g stroke="#7d0206" stroke-width="14" opacity=".45" transform="translate(1.5,1.5)">
+      <line x1="35" y1="35" x2="65" y2="65"/>
+      <line x1="65" y1="35" x2="35" y2="65"/>
+    </g>
+    <g stroke="#ffffff" stroke-width="13">
+      <line x1="35" y1="35" x2="65" y2="65"/>
+      <line x1="65" y1="35" x2="35" y2="65"/>
+    </g>
+  </g>
+</svg>
