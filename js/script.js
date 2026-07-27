@@ -149,6 +149,10 @@ const Sound = (() => {
   };
 })();
 
+// A top-level `const` is not a property of `window`, so apps.js could not
+// see it through `window.Sound`. Publish it explicitly.
+window.Sound = Sound;
+
 /* ---------------- Filing drawer ---------------- */
 
 const TAB_POSITIONS = ["tab-left", "tab-center", "tab-right"];

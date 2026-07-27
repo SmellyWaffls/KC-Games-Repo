@@ -13,7 +13,8 @@
       "Bash(git remote *)",
       "Bash(git branch *)",
       "Bash(timeout 60 git fetch origin)",
-      "Bash(git rev-list *)"
+      "Bash(git rev-list *)",
+      "Bash(timeout 90 git push origin main)"
     ]
   }
 }
