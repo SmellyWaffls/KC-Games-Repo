@@ -240,7 +240,7 @@ function closeDialog() {
 function focusWindow(id) {
   const win = document.getElementById(id);
   if (!win) return;
-  win.classList.remove("is-hidden");
+  win.classList.remove("is-closed", "is-minimized");
   win.style.zIndex = ++zCounter;
   updateTaskbar();
 }
@@ -261,9 +261,13 @@ function initWindows() {
 
         if (action === "dialog-close") {
           closeDialog();
-        } else if (action === "close" || action === "minimize") {
+        } else if (action === "close") {
           Sound.close();
-          win.classList.add("is-hidden");
+          win.classList.add("is-closed");
+          updateTaskbar();
+        } else if (action === "minimize") {
+          Sound.close();
+          win.classList.add("is-minimized");
           updateTaskbar();
         } else if (action === "maximize") {
           Sound.click();
@@ -340,8 +344,13 @@ function makeDraggable(win) {
 
 function updateTaskbar() {
   const container = document.getElementById("taskbar-items");
-  const windows = [...document.querySelectorAll(".desktop .window:not(.dialog-window)")];
-  const topZ = Math.max(...windows.filter((w) => !w.classList.contains("is-hidden"))
+
+  // Closed windows leave the taskbar entirely; minimized ones stay so they
+  // can be restored.
+  const windows = [...document.querySelectorAll(".desktop .window:not(.dialog-window)")]
+    .filter((w) => !w.classList.contains("is-closed"));
+
+  const topZ = Math.max(...windows.filter((w) => !w.classList.contains("is-minimized"))
     .map((w) => parseInt(w.style.zIndex || 0, 10)), 0);
 
   container.innerHTML = "";
@@ -350,19 +359,20 @@ function updateTaskbar() {
     const item = document.createElement("button");
     item.type = "button";
     item.className = "taskbar-item";
-    if (!win.classList.contains("is-hidden") && parseInt(win.style.zIndex || 0, 10) === topZ) {
+
+    const minimized = win.classList.contains("is-minimized");
+    if (!minimized && parseInt(win.style.zIndex || 0, 10) === topZ) {
       item.classList.add("active");
     }
+
     item.textContent = win.querySelector(".title-bar-text").textContent;
     item.addEventListener("click", () => {
       Sound.click();
-      if (win.classList.contains("is-hidden")) {
+      if (minimized || parseInt(win.style.zIndex || 0, 10) !== topZ) {
         focusWindow(win.id);
-      } else if (parseInt(win.style.zIndex || 0, 10) === topZ) {
-        win.classList.add("is-hidden");
-        updateTaskbar();
       } else {
-        focusWindow(win.id);
+        win.classList.add("is-minimized");
+        updateTaskbar();
       }
     });
     container.appendChild(item);

@@ -215,7 +215,9 @@ body {
   min-width: 260px;
 }
 
-.window.is-hidden { display: none; }
+.window.is-hidden,
+.window.is-closed,
+.window.is-minimized { display: none; }
 
 .title-bar {
   display: flex;
@@ -663,6 +665,196 @@ body {
   border-radius: 3px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 3px rgba(0,0,0,0.4);
 }
+
+/* ---------- Built-in apps ---------- */
+
+.app-body {
+  max-height: none;
+  background: var(--win-bg);
+  padding: 8px;
+}
+
+/* --- Minesweeper --- */
+
+.ms-panel {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  background: var(--win-bg);
+  padding: 6px;
+}
+
+.ms-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  margin-bottom: 6px;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.ms-lcd {
+  font-family: "Courier New", monospace;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: #ff2b2b;
+  background: #1a0000;
+  padding: 1px 5px;
+  border: 1px solid #4a4a4a;
+}
+
+.ms-face {
+  width: 28px;
+  height: 28px;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  background: var(--win-bg);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+}
+
+.ms-face:active {
+  border-top-color: #808080;
+  border-left-color: #808080;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+}
+
+.ms-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 22px);
+  grid-template-rows: repeat(9, 22px);
+}
+
+.ms-cell {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  background: var(--win-bg);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  cursor: pointer;
+}
+
+.ms-cell.open {
+  border: 1px solid #b0ada0;
+  background: #d6d3c4;
+  cursor: default;
+}
+
+.ms-cell.mine { background: #d6d3c4; }
+.ms-cell.boom { background: #ff2b2b; }
+
+/* --- Paint --- */
+
+.paint-layout {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.paint-tools {
+  display: grid;
+  grid-template-columns: repeat(2, 26px);
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.paint-tool {
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  background: var(--win-bg);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+}
+
+.paint-tool.active {
+  border-top-color: #808080;
+  border-left-color: #808080;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+  background: #dcd9c8;
+}
+
+.paint-canvas-wrap {
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  background: #fff;
+  line-height: 0;
+}
+
+#paint-canvas {
+  display: block;
+  cursor: crosshair;
+  max-width: 100%;
+}
+
+.paint-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--win-bg);
+  border-top: 1px solid #b8b5a0;
+}
+
+.paint-swatch-current {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+
+.paint-palette {
+  display: grid;
+  grid-template-columns: repeat(14, 14px);
+  grid-template-rows: repeat(2, 14px);
+  gap: 1px;
+}
+
+.paint-swatch {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  cursor: pointer;
+  border: 1px solid #808080;
+}
+
+.paint-size {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  margin-left: auto;
+}
+
+.paint-size input { width: 70px; }
 
 /* ---------- Modal dialog (game properties) ---------- */
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KC Games</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%2245%22 height=%2245%22 x=%224%22 y=%224%22 fill=%22%23ff5252%22/><rect width=%2245%22 height=%2245%22 x=%2251%22 y=%224%22 fill=%22%2352c93d%22/><rect width=%2245%22 height=%2245%22 x=%224%22 y=%2251%22 fill=%22%232586ff%22/><rect width=%2245%22 height=%2245%22 x=%2251%22 y=%2251%22 fill=%22%23ffd23d%22/></svg>">
-<link rel="stylesheet" href="css/style.css?v=7">
+<link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
 
@@ -20,6 +20,14 @@
     <button class="desktop-icon" data-focus="games-window">
       <span class="d-icon" aria-hidden="true">🗄️</span>
       <span class="d-label">My Games</span>
+    </button>
+    <button class="desktop-icon" data-focus="minesweeper-window">
+      <span class="d-icon" aria-hidden="true">💣</span>
+      <span class="d-label">Minesweeper</span>
+    </button>
+    <button class="desktop-icon" data-focus="paint-window">
+      <span class="d-icon" aria-hidden="true">🎨</span>
+      <span class="d-label">Paint</span>
     </button>
     <button class="desktop-icon" id="recycle-icon">
       <span class="d-icon" aria-hidden="true">🗑️</span>
@@ -75,6 +83,62 @@
     </div>
   </section>
 
+  <!-- Minesweeper (closed until launched from the desktop or Start menu) -->
+  <section class="window is-closed" id="minesweeper-window" style="left:220px; top:330px; z-index:6;">
+    <div class="title-bar">
+      <span class="title-bar-icon" aria-hidden="true">💣</span>
+      <span class="title-bar-text">Minesweeper</span>
+      <div class="title-bar-controls">
+        <button class="tb-btn" data-action="minimize" aria-label="Minimize">_</button>
+        <button class="tb-btn tb-close" data-action="close" aria-label="Close">✕</button>
+      </div>
+    </div>
+    <div class="menu-bar">
+      <span id="ms-new">Game</span><span>Options</span><span>Help</span>
+    </div>
+    <div class="window-body app-body">
+      <div class="ms-panel">
+        <div class="ms-head">
+          <span class="ms-lcd" id="ms-mines">010</span>
+          <button class="ms-face" id="ms-face" type="button" aria-label="New game">🙂</button>
+          <span class="ms-lcd" id="ms-time">000</span>
+        </div>
+        <div class="ms-grid" id="ms-grid"></div>
+      </div>
+    </div>
+    <div class="status-bar"><span id="ms-status">Left-click to clear &middot; right-click to flag</span></div>
+  </section>
+
+  <!-- Paint (closed until launched) -->
+  <section class="window is-closed" id="paint-window" style="left:300px; top:400px; z-index:7;">
+    <div class="title-bar">
+      <span class="title-bar-icon" aria-hidden="true">🎨</span>
+      <span class="title-bar-text">untitled - Paint</span>
+      <div class="title-bar-controls">
+        <button class="tb-btn" data-action="minimize" aria-label="Minimize">_</button>
+        <button class="tb-btn tb-close" data-action="close" aria-label="Close">✕</button>
+      </div>
+    </div>
+    <div class="menu-bar">
+      <span id="pt-clear">File</span><span>Edit</span><span>View</span><span>Image</span><span id="pt-save">Save</span>
+    </div>
+    <div class="window-body app-body paint-layout">
+      <div class="paint-tools" id="paint-tools"></div>
+      <div class="paint-canvas-wrap">
+        <canvas id="paint-canvas" width="340" height="230"></canvas>
+      </div>
+    </div>
+    <div class="paint-footer">
+      <span class="paint-swatch-current" id="pt-current"></span>
+      <div class="paint-palette" id="paint-palette"></div>
+      <label class="paint-size">
+        Size
+        <input type="range" id="pt-size" min="1" max="16" value="2">
+      </label>
+    </div>
+    <div class="status-bar"><span id="pt-status">Pencil</span></div>
+  </section>
+
   <!-- Game details dialog (hidden by default) -->
   <div class="modal-overlay" id="modal-overlay">
     <section class="window dialog-window" id="game-dialog">
@@ -108,6 +172,8 @@
   <div class="start-menu-banner"><span>KC Games</span></div>
   <ul class="start-menu-list">
     <li data-focus="games-window">🗄️ My Games</li>
+    <li data-focus="minesweeper-window">💣 Minesweeper</li>
+    <li data-focus="paint-window">🎨 Paint</li>
     <li class="start-menu-sep"></li>
     <li data-scheme-cycle="1">🎨 Change Color Scheme</li>
   </ul>
@@ -130,6 +196,7 @@
   </div>
 </footer>
 
-<script src="js/script.js?v=2"></script>
+<script src="js/script.js?v=8"></script>
+<script src="js/apps.js?v=8"></script>
 </body>
 </html>
