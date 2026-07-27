@@ -9,7 +9,9 @@
       "PowerShell(try { $v = & python3 --version 2>&1 | Out-String; \"OUT: $v\" } catch { \"FAILED: $_\" })",
       "Bash(git commit -q -m ' *)",
       "Bash(git config *)",
-      "Bash(ls -lt ~/Downloads 2>/dev/null | head -12; echo \"--- Desktop ---\"; ls -lt ~/OneDrive/Desktop 2>/dev/null | head -12)"
+      "Bash(ls -lt ~/Downloads 2>/dev/null | head -12; echo \"--- Desktop ---\"; ls -lt ~/OneDrive/Desktop 2>/dev/null | head -12)",
+      "Bash(git remote *)",
+      "Bash(git branch *)"
     ]
   }
 }

@@ -15,8 +15,113 @@ const GAMES = [
   }
 ];
 
+// Blank filler folders padding out the drawer. Purely tactile — they hover
+// and click like real ones but hold nothing. Bump this to taste.
+const EMPTY_SLOTS = 18;
+
 const SCHEMES = ["blue", "olive", "silver"];
 let zCounter = 10;
+
+/* ---------------- Sound ---------------- */
+// Everything is synthesized with the Web Audio API, so there are no audio
+// files to ship. The context is created lazily on the first interaction
+// because browsers block audio until the user has touched the page.
+
+const Sound = (() => {
+  let ctx = null;
+  let muted = localStorage.getItem("kc-games-muted") === "1";
+
+  function audio() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+    }
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  }
+
+  // A single decaying oscillator blip.
+  function blip({ freq, to, type = "square", dur = 0.06, vol = 0.05 }) {
+    const a = audio();
+    if (!a || muted) return;
+
+    const osc = a.createOscillator();
+    const gain = a.createGain();
+    const t = a.currentTime;
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t);
+    if (to) osc.frequency.exponentialRampToValueAtTime(to, t + dur);
+
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+
+    osc.connect(gain).connect(a.destination);
+    osc.start(t);
+    osc.stop(t + dur);
+  }
+
+  // Band-passed white noise — used for the paper-slide rasp.
+  function rasp({ dur = 0.14, vol = 0.05, from = 1400, to = 500 }) {
+    const a = audio();
+    if (!a || muted) return;
+
+    const frames = Math.floor(a.sampleRate * dur);
+    const buffer = a.createBuffer(1, frames, a.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < frames; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / frames);
+    }
+
+    const src = a.createBufferSource();
+    src.buffer = buffer;
+
+    const filter = a.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.Q.value = 1.2;
+    filter.frequency.setValueAtTime(from, a.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(to, a.currentTime + dur);
+
+    const gain = a.createGain();
+    gain.gain.setValueAtTime(vol, a.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+
+    src.connect(filter).connect(gain).connect(a.destination);
+    src.start();
+  }
+
+  return {
+    // Sweeping the cursor across the drawer walks up a scale, so a fast
+    // pass sounds like running a thumb along the file tabs.
+    tick(step = 0) {
+      blip({ freq: 520 + (step % 12) * 26, dur: 0.035, vol: 0.035, type: "square" });
+    },
+    slide() {
+      rasp({ dur: 0.16, vol: 0.06, from: 1600, to: 420 });
+    },
+    open() {
+      blip({ freq: 660, dur: 0.07, vol: 0.05, type: "triangle" });
+      setTimeout(() => blip({ freq: 990, dur: 0.11, vol: 0.045, type: "triangle" }), 70);
+    },
+    close() {
+      blip({ freq: 420, to: 240, dur: 0.09, vol: 0.045, type: "triangle" });
+    },
+    click() {
+      blip({ freq: 880, to: 620, dur: 0.04, vol: 0.04, type: "square" });
+    },
+    thud() {
+      blip({ freq: 200, to: 120, dur: 0.1, vol: 0.05, type: "sine" });
+    },
+    isMuted() { return muted; },
+    toggleMute() {
+      muted = !muted;
+      localStorage.setItem("kc-games-muted", muted ? "1" : "0");
+      if (!muted) Sound.click();
+      return muted;
+    }
+  };
+})();
 
 /* ---------------- Filing drawer ---------------- */
 
@@ -26,53 +131,88 @@ const TAB_POSITIONS = ["tab-left", "tab-center", "tab-right"];
 function artFor(game) {
   return game.image
     ? `<img class="game-art" src="${game.image}" alt="">`
-    : game.icon;
+    : (game.icon || "");
+}
+
+function folderMarkup(game, i) {
+  const badge = game
+    ? `<span class="folder-badge" style="background: linear-gradient(135deg, ${game.accent[0]}, ${game.accent[1]});">${artFor(game)}</span>`
+    : "";
+
+  return `
+    <span class="folder-face">
+      <span class="folder-paper">
+        <span class="paper-line"></span>
+        <span class="paper-line"></span>
+        <span class="paper-line"></span>
+        <span class="paper-line"></span>
+      </span>
+      ${badge}
+      <span class="folder-front">
+        <span class="folder-name"></span>
+        <span class="folder-status"></span>
+      </span>
+    </span>
+    <span class="folder-tab ${TAB_POSITIONS[i % 3]}"></span>
+  `;
+}
+
+function makeFolder(game, i) {
+  const folder = document.createElement("button");
+  folder.className = game ? "file-folder" : "file-folder is-empty";
+  folder.type = "button";
+  folder.innerHTML = folderMarkup(game, i);
+
+  if (game) {
+    folder.querySelector(".folder-name").textContent = game.title;
+    folder.querySelector(".folder-status").textContent = game.status;
+    folder.querySelector(".folder-tab").textContent = game.title;
+  }
+
+  // The whole point of the empty folders: a satisfying run of ticks as the
+  // cursor sweeps the drawer.
+  folder.addEventListener("mouseenter", () => Sound.tick(i));
+
+  folder.addEventListener("click", () => {
+    document.querySelectorAll(".file-folder.pulled").forEach((el) => el.classList.remove("pulled"));
+    folder.classList.add("pulled");
+    Sound.slide();
+
+    const status = document.getElementById("status-text");
+
+    if (!game) {
+      status.textContent = "Empty folder";
+      setTimeout(() => folder.classList.remove("pulled"), 420);
+      setTimeout(() => Sound.thud(), 170);
+      return;
+    }
+
+    status.textContent = `${game.title} — ${game.status}`;
+    setTimeout(() => openDialog(GAMES.indexOf(game)), 200);
+  });
+
+  return folder;
 }
 
 function renderGames() {
   const drawer = document.getElementById("games-drawer");
 
-  GAMES.forEach((game, i) => {
-    const folder = document.createElement("button");
-    folder.className = "file-folder";
-    folder.type = "button";
-    folder.innerHTML = `
-      <span class="folder-face">
-        <span class="folder-paper">
-          <span class="paper-line"></span>
-          <span class="paper-line"></span>
-          <span class="paper-line"></span>
-          <span class="paper-line"></span>
-        </span>
-        <span class="folder-badge" style="background: linear-gradient(135deg, ${game.accent[0]}, ${game.accent[1]});">${artFor(game)}</span>
-        <span class="folder-front">
-          <span class="folder-name"></span>
-          <span class="folder-status"></span>
-        </span>
-      </span>
-      <span class="folder-tab ${TAB_POSITIONS[i % 3]}"></span>
-    `;
-    folder.querySelector(".folder-name").textContent = game.title;
-    folder.querySelector(".folder-status").textContent = game.status;
-    folder.querySelector(".folder-tab").textContent = game.title;
+  GAMES.forEach((game, i) => drawer.appendChild(makeFolder(game, i)));
 
-    folder.addEventListener("click", () => {
-      document.querySelectorAll(".file-folder.pulled").forEach((el) => el.classList.remove("pulled"));
-      folder.classList.add("pulled");
-      document.getElementById("status-text").textContent = `${game.title} — ${game.status}`;
-      setTimeout(() => openDialog(i), 200);
-    });
+  for (let i = 0; i < EMPTY_SLOTS; i++) {
+    drawer.appendChild(makeFolder(null, GAMES.length + i));
+  }
 
-    drawer.appendChild(folder);
-  });
-
-  document.getElementById("status-text").textContent = `${GAMES.length} file(s)`;
+  document.getElementById("status-text").textContent =
+    `${GAMES.length} file(s), ${EMPTY_SLOTS} empty`;
 }
 
 /* ---------------- Game properties dialog ---------------- */
 
 function openDialog(index) {
   const game = GAMES[index];
+  if (!game) return;
+
   document.getElementById("dialog-title").textContent = `${game.title} Properties`;
   document.getElementById("dialog-icon").innerHTML = artFor(game);
 
@@ -85,10 +225,13 @@ function openDialog(index) {
   document.getElementById("dialog-tags").textContent = game.tags.join(", ");
   document.getElementById("dialog-link").href = game.link;
   document.getElementById("modal-overlay").classList.add("open");
+  Sound.open();
 }
 
 function closeDialog() {
-  document.getElementById("modal-overlay").classList.remove("open");
+  const overlay = document.getElementById("modal-overlay");
+  if (overlay.classList.contains("open")) Sound.close();
+  overlay.classList.remove("open");
   document.querySelectorAll(".file-folder.pulled").forEach((el) => el.classList.remove("pulled"));
 }
 
@@ -119,9 +262,11 @@ function initWindows() {
         if (action === "dialog-close") {
           closeDialog();
         } else if (action === "close" || action === "minimize") {
+          Sound.close();
           win.classList.add("is-hidden");
           updateTaskbar();
         } else if (action === "maximize") {
+          Sound.click();
           win.classList.toggle("maximized");
           if (win.classList.contains("maximized")) {
             win.dataset.prev = JSON.stringify({
@@ -143,6 +288,7 @@ function initWindows() {
 
   document.querySelectorAll("[data-focus]").forEach((el) => {
     el.addEventListener("click", () => {
+      Sound.click();
       focusWindow(el.dataset.focus);
       closeStartMenu();
     });
@@ -154,6 +300,11 @@ function initWindows() {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { closeDialog(); closeStartMenu(); }
+  });
+
+  // Toolbar and menu chrome are decorative, but they should still click.
+  document.querySelectorAll(".tbar-btn, .menu-bar span").forEach((el) => {
+    el.addEventListener("click", () => Sound.click());
   });
 }
 
@@ -204,6 +355,7 @@ function updateTaskbar() {
     }
     item.textContent = win.querySelector(".title-bar-text").textContent;
     item.addEventListener("click", () => {
+      Sound.click();
       if (win.classList.contains("is-hidden")) {
         focusWindow(win.id);
       } else if (parseInt(win.style.zIndex || 0, 10) === topZ) {
@@ -229,6 +381,7 @@ function cycleScheme() {
   const next = SCHEMES[(SCHEMES.indexOf(current) + 1) % SCHEMES.length];
   root.setAttribute("data-scheme", next);
   localStorage.setItem("kc-games-scheme", next);
+  Sound.click();
 }
 
 function initShell() {
@@ -242,6 +395,7 @@ function initShell() {
 
   startBtn.addEventListener("click", (e) => {
     e.stopPropagation();
+    Sound.click();
     startMenu.classList.toggle("open");
   });
 
@@ -254,6 +408,14 @@ function initShell() {
   });
 
   document.getElementById("tray-scheme").addEventListener("click", cycleScheme);
+
+  const muteBtn = document.getElementById("tray-mute");
+  function paintMute() {
+    muteBtn.textContent = Sound.isMuted() ? "🔇" : "🔊";
+    muteBtn.title = Sound.isMuted() ? "Sound off — click to enable" : "Sound on — click to mute";
+  }
+  muteBtn.addEventListener("click", () => { Sound.toggleMute(); paintMute(); });
+  paintMute();
 
   function tick() {
     const now = new Date();

@@ -481,6 +481,19 @@ body {
   z-index: 4;
 }
 
+/* Blank filler folders — same feel, nothing inside. */
+.file-folder.is-empty .folder-face {
+  background: linear-gradient(180deg, #e6cd95 0%, #d5b268 55%, #c39d4c 100%);
+}
+
+.file-folder.is-empty .folder-front {
+  background: linear-gradient(180deg, #ddbe70 0%, #cea757 100%);
+}
+
+.file-folder.is-empty .folder-paper {
+  opacity: 0.55;
+}
+
 /* the manila folder body */
 .folder-face {
   position: absolute;
