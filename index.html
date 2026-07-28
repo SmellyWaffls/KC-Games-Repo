@@ -4,11 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KC Games</title>
-<link rel="icon" type="image/svg+xml" href="assets/logo.svg?v=11">
-<link rel="shortcut icon" type="image/svg+xml" href="assets/logo.svg?v=11">
-<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg?v=13">
+<link rel="shortcut icon" type="image/svg+xml" href="assets/logo.svg?v=13">
+<link rel="stylesheet" href="css/style.css?v=13">
 </head>
 <body>
+
+<!-- Boot sequence. Starts on a click so the browser will let audio play;
+     an intro that fired on page load would be muted. -->
+<div class="boot" id="boot">
+
+  <button class="boot-power" id="boot-power" type="button">
+    <span class="power-glyph">⏻</span>
+    <span class="power-label">Click to power on</span>
+  </button>
+
+  <pre class="boot-post" id="boot-post" aria-hidden="true"></pre>
+
+  <div class="boot-splash" id="boot-splash">
+    <img class="boot-logo" src="assets/logo.svg?v=13" alt="">
+    <div class="boot-title">KC Games</div>
+    <div class="boot-trough">
+      <div class="boot-blocks"><i></i><i></i><i></i></div>
+    </div>
+    <div class="boot-hint">Starting up&hellip;</div>
+  </div>
+
+  <div class="boot-skip" id="boot-skip">click to skip</div>
+</div>
 
 <div class="desktop">
 
@@ -200,7 +223,8 @@
   </div>
 </footer>
 
-<script src="js/script.js?v=11"></script>
-<script src="js/apps.js?v=11"></script>
+<script src="js/script.js?v=13"></script>
+<script src="js/apps.js?v=13"></script>
+<script src="js/boot.js?v=13"></script>
 </body>
 </html>

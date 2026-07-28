@@ -87,6 +87,179 @@ body {
   overflow: hidden;
 }
 
+/* ---------- Boot sequence ---------- */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  color: #d6d6d6;
+  font-family: "Courier New", monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.boot.is-done {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+/* Faint CRT scanlines over the whole boot screen. */
+.boot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 3px
+  );
+}
+
+.boot-power {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: none;
+  border: none;
+  color: #7ee88a;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.boot-power.gone { display: none; }
+
+.power-glyph {
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  border: 2px solid #2f6f38;
+  border-radius: 50%;
+  color: #7ee88a;
+  box-shadow: 0 0 18px rgba(126, 232, 138, 0.25), inset 0 0 14px rgba(126, 232, 138, 0.12);
+  animation: power-pulse 2s ease-in-out infinite;
+}
+
+.boot-power:hover .power-glyph {
+  color: #b6ffbe;
+  border-color: #57b364;
+  box-shadow: 0 0 30px rgba(126, 232, 138, 0.5), inset 0 0 18px rgba(126, 232, 138, 0.2);
+}
+
+@keyframes power-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.05); opacity: 1; }
+}
+
+.boot-post {
+  display: none;
+  position: absolute;
+  top: 8%;
+  left: 8%;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #d6d6d6;
+  white-space: pre;
+}
+
+.boot-post.show { display: block; }
+
+.boot-splash {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.boot-splash.show {
+  display: flex;
+  animation: boot-fade 0.5s ease;
+}
+
+@keyframes boot-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.boot-logo {
+  width: 84px;
+  height: 84px;
+  filter: drop-shadow(0 4px 14px rgba(236, 28, 36, 0.45));
+}
+
+.boot-title {
+  font-family: "Tahoma", var(--font);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+/* Classic marching-blocks progress trough. */
+.boot-trough {
+  width: 176px;
+  height: 16px;
+  padding: 2px;
+  overflow: hidden;
+  border-top: 2px solid #1d1d1d;
+  border-left: 2px solid #1d1d1d;
+  border-right: 2px solid #4a4a4a;
+  border-bottom: 2px solid #4a4a4a;
+  background: #0a0a0a;
+}
+
+.boot-blocks {
+  display: flex;
+  gap: 4px;
+  width: 60px;
+  height: 100%;
+  animation: march 1.5s linear infinite;
+}
+
+.boot-blocks i {
+  flex: 1;
+  background: linear-gradient(180deg, #7ac2ff, #1d6fd4);
+  box-shadow: 0 0 8px rgba(96, 176, 255, 0.7);
+}
+
+@keyframes march {
+  from { transform: translateX(-64px); }
+  to   { transform: translateX(180px); }
+}
+
+.boot-hint {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8b8b8b;
+}
+
+.boot-skip {
+  display: none;
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: #5c5c5c;
+}
+
+.boot-skip.show { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .power-glyph, .boot-blocks, .boot-splash.show { animation: none; }
+}
+
 /* ---------- Desktop background (Bliss-style sky + hill) ---------- */
 
 .desktop {
