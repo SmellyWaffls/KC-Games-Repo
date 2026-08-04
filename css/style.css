@@ -1029,6 +1029,12 @@ body {
 
 .paint-size input { width: 70px; }
 
+.win-btn.is-disabled {
+  color: #808080;
+  text-shadow: 1px 1px 0 #fff;
+  pointer-events: none;
+}
+
 /* ---------- Modal dialog (game properties) ---------- */
 
 .modal-overlay {

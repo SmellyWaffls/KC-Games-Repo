@@ -11,7 +11,7 @@ const GAMES = [
     status: "In Progress",
     image: "assets/corrupted-reality.png",
     accent: ["#f2a900", "#c07f00"],
-    link: "#"
+    link: "games/corrupted-reality.html"
   }
 ];
 
@@ -253,7 +253,19 @@ function openDialog(index) {
   document.getElementById("dialog-desc").textContent = game.description;
   document.getElementById("dialog-status").textContent = game.status;
   document.getElementById("dialog-tags").textContent = game.tags.join(", ");
-  document.getElementById("dialog-link").href = game.link;
+  // Playable games open in their own tab so the desktop stays put behind
+  // them; entries without a real link yet stay inert.
+  const link = document.getElementById("dialog-link");
+  const playable = game.link && game.link !== "#";
+  link.href = game.link;
+  link.textContent = playable ? "Play" : "No link yet";
+  link.classList.toggle("is-disabled", !playable);
+  if (playable) {
+    link.target = "_blank";
+    link.rel = "noopener";
+  } else {
+    link.removeAttribute("target");
+  }
   document.getElementById("modal-overlay").classList.add("open");
   Sound.open();
 }
