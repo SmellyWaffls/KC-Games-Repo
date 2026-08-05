@@ -11,7 +11,7 @@ const GAMES = [
     status: "In Progress",
     image: "assets/corrupted-reality.png",
     accent: ["#f2a900", "#c07f00"],
-    link: "games/corrupted-reality.html"
+    link: "https://corrupted-reality.web.app/"
   }
 ];
 
